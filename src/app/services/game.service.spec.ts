@@ -61,15 +61,16 @@ describe('GameService roll', () => {
   it('should be inactive after two rolls', () => {
     service.roll(1);
     service.roll(2);
-    expect(service.game.currentFrame!.isActive).toBeFalse();
+    expect(service.game.frames[0].isActive).toBeFalse();
   });
 
   it('should be inactive after three rolls on the 10th frame', () => {
     service.game.currentFrame = new Frame(10);
+    service.game.frames.push(service.game.currentFrame);
     service.roll(8);
     service.roll(2);
     service.roll(3);
-    expect(service.game.currentFrame!.isActive).toBeFalse();
+    expect(service.game.frames[0].isActive).toBeFalse();
   });
 
   it('should be active after two rolls on the 10th frame', () => {
@@ -81,9 +82,10 @@ describe('GameService roll', () => {
 
   it('should be inactive after two non-strike or spare rolls on the 10th frame', () => {
     service.game.currentFrame = new Frame(10);
+    service.game.frames.push(service.game.currentFrame);
     service.roll(1);
     service.roll(2);
-    expect(service.game.currentFrame!.isActive).toBeFalse();
+    expect(service.game.frames[0].isActive).toBeFalse();
   });
 
   it('roll() should fail on 1st roll if number of pins knocked over exceed pins remaining', () => {
