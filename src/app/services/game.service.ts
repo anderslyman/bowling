@@ -85,8 +85,6 @@ export class GameService {
         if (isStrike) {
           const nextRolls = this.getNextRolls(this.game.frames, i);
 
-          console.info(nextRolls);
-
           frame.score += 10 + nextRolls.reduce((a, b) => a + b, 0);
         } else if (isSpare) {
           const nextRolls = this.getNextRolls(this.game.frames, i);
@@ -104,8 +102,6 @@ export class GameService {
     }
 
     this.game.totalScore = this.game.frames.reduce((a, b) => a + b.score, 0);
-
-    console.info(this.game.frames.map((frame) => frame.score));
 
     return this.game.totalScore;
   }
