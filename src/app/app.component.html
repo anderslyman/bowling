@@ -1,0 +1,13 @@
+<div class="banner">Bowling Scorer</div>
+<app-score [gameService]="gameService"></app-score>
+<div class="controls">
+  <span>Current Score: {{ gameService.game.totalScore }}</span>
+  <span>Current Frame: {{ gameService.game.currentFrame?.frameNumber ?? 1 }}</span>
+  <span>Rolls Remaining: {{ gameService.game.currentFrame?.rollsRemaining ?? 2 }}</span>
+  <input type="button" value="Reset" (click)="gameService.startNewGame()" />
+  <div>
+    <span>Enter next roll, or rolls separated by commas:</span>
+    <input type="text" [(ngModel)]="input" (keyup.enter)="addInput()" />
+    <input type="button" value="Add" (click)="addInput()" />
+  </div>
+</div>

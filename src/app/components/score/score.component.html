@@ -1,0 +1,14 @@
+<table class="score">
+    <tr>
+        <th>Frame</th>
+        <th *ngFor="let f of frameNumbers">{{f}}</th>
+    </tr>
+    <tr>
+        <td>Input</td>
+        <td *ngFor="let f of frameNumbers">{{getFrameInput(f)}}</td>
+    </tr>
+    <tr>
+        <td>Score</td>
+        <td *ngFor="let f of frameNumbers">{{getFrameCumulativeScore(f)}}</td>
+    </tr>
+</table>
