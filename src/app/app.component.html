@@ -1,13 +1,33 @@
 <div class="banner">Bowling Scorer</div>
 <app-score [gameService]="gameService"></app-score>
 <div class="controls">
-  <span>Current Score: {{ gameService.game.totalScore }}</span>
-  <span>Current Frame: {{ gameService.game.currentFrame?.frameNumber ?? 1 }}</span>
-  <span>Rolls Remaining: {{ gameService.game.currentFrame?.rollsRemaining ?? 2 }}</span>
+  <span *ngIf="gameService.game.isOver" class="game-over">Game Over</span>
+  <span *ngIf="!gameService.game.isOver"
+    >Current Score: {{ gameService.game.totalScore }}</span
+  >
+  <span *ngIf="gameService.game.isOver"
+    >Final Score: {{ gameService.game.totalScore }}</span
+  >
+  <span *ngIf="!gameService.game.isOver"
+    >Current Frame: {{ gameService.game.currentFrame?.frameNumber ?? 1 }}</span
+  >
+  <span *ngIf="!gameService.game.isOver"
+    >Rolls Remaining:
+    {{ gameService.game.currentFrame?.rollsRemaining ?? 2 }}</span
+  >
   <input type="button" value="Reset" (click)="gameService.startNewGame()" />
-  <div>
+  <div *ngIf="!gameService.game.isOver" class="roll-input">
     <span>Enter next roll, or rolls separated by commas:</span>
-    <input type="text" [(ngModel)]="input" (keyup.enter)="addInput()" />
-    <input type="button" value="Add" (click)="addInput()" />
+    <input
+      type="text"
+      [(ngModel)]="input"
+      (keyup.enter)="addInput()"
+    />
+    <span *ngIf="error" class="error-message">{{ error }}</span>
+    <input
+      type="button"
+      value="Add"
+      (click)="addInput()"
+    />
   </div>
 </div>

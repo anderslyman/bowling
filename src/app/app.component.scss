@@ -41,7 +41,25 @@
     }
   }
 
-  span, input {
+  span,
+  input {
     margin-top: 5px;
   }
+}
+
+.roll-input {
+  display: flex;
+  flex-direction: column;
+}
+
+.error-message {
+  color: #d9534f;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.game-over {
+  margin-bottom: 20px;
+  font-size: 2em;
+  color: #d9534f;
 }

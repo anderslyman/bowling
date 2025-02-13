@@ -4,4 +4,5 @@ export class Game {
   frames: Frame[] = [];
   currentFrame?: Frame;
   totalScore = 0;
+  isOver = false;
 }

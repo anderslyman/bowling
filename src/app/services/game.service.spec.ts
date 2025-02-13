@@ -14,20 +14,6 @@ describe('GameService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('roll() should create a new frame when the first roll is submitted', () => {
-    service.roll(5);
-    expect(service.game.currentFrame).toBeTruthy();
-    expect(service.game.frames.length).toBe(1);
-  });
-
-  it('roll() should create a new frame when the current frame is closed', () => {
-    service.roll(5);
-    service.roll(3);
-    service.roll(1);
-    expect(service.game.currentFrame).toBeTruthy();
-    expect(service.game.frames.length).toBe(2);
-  });
-
   it('createNextFrame() should return true if current frame is < 10', () => {
     for (let i = 0; i < 9; i++) {
       service.createNextFrame();
@@ -45,12 +31,67 @@ describe('GameService', () => {
   });
 });
 
+describe('GameService parseInput', () => {
+  let service: GameService;
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({});
+    service = TestBed.inject(GameService);
+  });
+
+  ['-1', '11', 'Fred', '\\', 'NaN', '10.1', '/', 'spare'].forEach(
+    (testCase) => {
+      it(`An input of [${testCase}] should return an error`, () => {
+        expect(service.parseInput(testCase)).toBeInstanceOf(Error);
+      });
+    }
+  );
+
+  ['0', '1', '10', 'x', '-', 'strike', 'miss'].forEach((testCase) => {
+    it(`An input of [${testCase}] should parse successfully`, () => {
+      expect(service.parseInput(testCase)).toBeInstanceOf(Number);
+    });
+  });
+
+  ['/', 'spare'].forEach(
+    (testCase) => {
+      it(`A spare on the first roll (using: ${testCase}) should return an error`, () => {
+        expect(service.parseInput(testCase)).toBeInstanceOf(Error);
+      });
+    }
+  );
+
+  [
+    [1, '/'],
+    [1, 'spare'],
+  ].forEach((testCase) => {
+    it(`A spare on the 2nd roll (using: ${testCase[1]}) should parse successfully`, () => {
+      service.roll(<number>testCase[0]);
+      expect(service.parseInput(<string>testCase[1])).toBeInstanceOf(Number);
+    });
+  });
+});
+
 describe('GameService roll', () => {
   let service: GameService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(GameService);
+  });
+
+  it('should create a new frame when the first roll is submitted', () => {
+    service.roll(5);
+    expect(service.game.currentFrame).toBeTruthy();
+    expect(service.game.frames.length).toBe(1);
+  });
+
+  it('should create a new frame when the current frame is closed', () => {
+    service.roll(5);
+    service.roll(3);
+    service.roll(1);
+    expect(service.game.currentFrame).toBeTruthy();
+    expect(service.game.frames.length).toBe(2);
   });
 
   it('should be active after one roll', () => {
@@ -88,34 +129,34 @@ describe('GameService roll', () => {
     expect(service.game.frames[0].isActive).toBeFalse();
   });
 
-  it('roll() should fail on 1st roll if number of pins knocked over exceed pins remaining', () => {
+  it('should fail on 1st roll if number of pins knocked over exceed pins remaining', () => {
     expect(service.roll(11)).toBeInstanceOf(Error);
   });
 
-  it('roll() should fail on 2nd roll if number of pins knocked over exceed pins remaining', () => {
+  it('should fail on 2nd roll if number of pins knocked over exceed pins remaining', () => {
     service.roll(5);
     expect(service.roll(8)).toBeInstanceOf(Error);
   });
 
-  it('roll() should succeed on 2nd roll if number of pins knocked over is <= pins remaining', () => {
+  it('should succeed on 2nd roll if number of pins knocked over is <= pins remaining', () => {
     service.roll(5);
     expect(service.roll(5)).toBeUndefined();
   });
 
-  it('roll() should fail on 3rd roll if number of pins knocked over exceed pins remaining on the 10th frame', () => {
+  it('should fail on 3rd roll if number of pins knocked over exceed pins remaining on the 10th frame', () => {
     service.game.currentFrame = new Frame(10);
     service.roll(2);
     expect(service.roll(9)).toBeInstanceOf(Error);
   });
 
-  it('roll() should succeed on 3rd roll if there are 3 strikes on the 10th frame', () => {
+  it('should succeed on 3rd roll if there are 3 strikes on the 10th frame', () => {
     service.game.currentFrame = new Frame(10);
     service.roll(10);
     service.roll(10);
     expect(service.roll(10)).toBeUndefined();
   });
 
-  it('roll() should succeed on 2nd roll if there are 2 strikes on the 10th frame', () => {
+  it('should succeed on 2nd roll if there are 2 strikes on the 10th frame', () => {
     service.game.currentFrame = new Frame(10);
     service.roll(10);
     expect(service.roll(10)).toBeUndefined();
@@ -268,7 +309,7 @@ describe('GameService scoring completions', () => {
     const scoringComplete = <boolean>testCase[1];
     const expected = <number>testCase[2];
 
-    it(`A roll of ${firstRoll} should return a score of ${expected} and marked ${
+    it(`A roll of ${firstRoll} should return a score of ${expected} and be marked ${
       scoringComplete ? 'complete' : 'incomplete'
     } if followed by rolls: [${rolls.slice(1).join(', ')}]`, () => {
       rolls.forEach((roll) => service.roll(roll));

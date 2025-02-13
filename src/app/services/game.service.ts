@@ -12,9 +12,37 @@ export class GameService {
     this.game = new Game();
   }
 
+  parseInput(input: string): number | Error {
+    if (input === 'x' || input === 'strike') {
+      return 10;
+    } else if (input === '/' || input === 'spare') {
+      // Subtract the previous roll from 10 to get the number of pins knocked over
+      const currentRolls = this.game.currentFrame?.rolls || [];
+      const lastRoll = currentRolls[currentRolls.length - 1];
+
+      if (lastRoll === undefined) {
+        return new Error('Cannot roll a spare on the first roll.');
+      }
+
+      return 10 - lastRoll;
+    } else if (input === '-' || input === 'miss') {
+      return 0;
+    } else {
+      const number = parseInt(input, 10);
+
+      if (isNaN(number) || number < 0 || number > 10 || input.includes('.')) {
+        return new Error('Invalid input: ' + input);
+      }
+
+      return number;
+    }
+  }
+
   roll(pins: number): void | Error {
     if (!this.game.currentFrame || !this.game.currentFrame.isActive) {
       if (!this.createNextFrame()) {
+        this.game.isOver = true;
+
         return new Error('Game is over');
       }
     }
@@ -67,6 +95,13 @@ export class GameService {
     }
 
     this.updateScores();
+
+    if (
+      this.game.currentFrame?.frameNumber === 10 &&
+      this.game.currentFrame.rollsRemaining === 0
+    ) {
+      this.game.isOver = true;
+    }
   }
 
   updateScores(): number {
@@ -179,7 +214,7 @@ export class GameService {
       }
     }
 
-    return rolls.filter(r => r !== undefined);
+    return rolls.filter((r) => r !== undefined);
   }
 
   private getRollDescription(
