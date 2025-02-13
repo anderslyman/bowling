@@ -138,6 +138,15 @@ export class GameService {
 
     this.game.totalScore = this.game.frames.reduce((a, b) => a + b.score, 0);
 
+    for (let i = this.game.frames.length - 1; i >= 0; i--) {
+      const frame = this.game.frames[i];
+
+      if (frame.completedScoring) {
+        this.game.completedFramesScore = frame.cumulativeScore;
+        break;
+      }
+    }
+
     return this.game.totalScore;
   }
 
