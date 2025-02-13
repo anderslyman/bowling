@@ -53,13 +53,11 @@ describe('GameService parseInput', () => {
     });
   });
 
-  ['/', 'spare'].forEach(
-    (testCase) => {
-      it(`A spare on the first roll (using: ${testCase}) should return an error`, () => {
-        expect(service.parseInput(testCase)).toBeInstanceOf(Error);
-      });
-    }
-  );
+  ['/', 'spare'].forEach((testCase) => {
+    it(`A spare on the first roll (using: ${testCase}) should return an error`, () => {
+      expect(service.parseInput(testCase)).toBeInstanceOf(Error);
+    });
+  });
 
   [
     [1, '/'],
@@ -78,6 +76,27 @@ describe('GameService roll', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({});
     service = TestBed.inject(GameService);
+  });
+
+  [
+    [[10, 10, 10, 10, 10, 10, 10, 10, 10], false],
+    [[10, 10, 10, 10, 10, 10, 10, 10, 10, /* Last Frame */ 10], false],
+    [[10, 10, 10, 10, 10, 10, 10, 10, 10, /* Last Frame */ 10, 10], false],
+    [[10, 10, 10, 10, 10, 10, 10, 10, 10, /* Last Frame */ 10, 10, 10], true],
+    [[10, 10, 10, 10, 10, 10, 10, 10, 10, /* Last Frame */ 1, 2], true],
+    [[10, 10, 10, 10, 10, 10, 10, 10, 10, /* Last Frame */ 8, 2], false],
+  ].forEach((testCase) => {
+    const rolls = <number[]>testCase[0];
+    const expected = <boolean>testCase[1];
+
+    it(`A game on the 10th frame with these rolls: [${rolls
+      .slice(9)
+      .join(', ')}] should ${
+      expected ? 'end the game' : 'not end the game'
+    }`, () => {
+      rolls.forEach((roll) => service.roll(roll));
+      expect(service.game.isOver).toBe(expected);
+    });
   });
 
   it('should create a new frame when the first roll is submitted', () => {
