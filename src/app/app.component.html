@@ -6,7 +6,6 @@
   <span *ngIf="!gameService.game.isOver"
     >Current Score: {{ gameService.game.completedFramesScore }}</span
   >
-  <!-- todo: current score should only include completed frames -->
   <span *ngIf="gameService.game.isOver"
     >Final Score: {{ gameService.game.completedFramesScore }}</span
   >
